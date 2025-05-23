@@ -81,8 +81,8 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 // Route::get('/notification', [PackageOrderController::class, 'index'])->middleware('auth:api');
 
 
-// //contact message get from frontend
-// Route::post('/contactMessage', [ContactMessageController::class, 'store']);
+//contact message get from frontend
+Route::post('/contactMessage', [ContactMessageController::class, 'store']);
 
 
 // //packages(backend) which is namely Booking
