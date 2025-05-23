@@ -93,10 +93,12 @@ Route::post('/contactMessage', [ContactMessageController::class, 'store']);
 
 
 // //settings(backend) which is namely settings
-// Route::middleware('auth:api')->group(function () {
-//     Route::post('newSettings/email', [SettingController::class, 'updateEmail']);
-//     Route::post('newSettings/password', [SettingController::class, 'updatePassword']);
-// });
+Route::middleware('auth:api')->group(function () {
+    Route::post('settings/email', [SettingController::class, 'updateEmail']);
+    Route::post('settings/password', [SettingController::class, 'updatePassword']);
+    Route::post('settings/logo', [SettingController::class, 'updateLogo']);
+    Route::post('settings/profile-pic', [SettingController::class, 'updateProfilePic']);
+});
 
 // //blogs (backend) which is namely blogs
 // Route::middleware('auth:api')->group(function () {

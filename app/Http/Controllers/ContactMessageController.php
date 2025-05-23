@@ -60,7 +60,7 @@ class ContactMessageController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Message sent successfully.',
+                'message' => 'Thank you for reaching out! We appreciate your message and will get back to you shortly.',
                 'last_inserted_id' => $contact->id,
                 'data' => $contact
             ], 201);
