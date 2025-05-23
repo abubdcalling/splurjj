@@ -40,93 +40,79 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api')
 
 
 
+
+
 Route::post('password/email', [AuthController::class, 'sendResetEmailLink']);
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.reset');
 
-// //profile updated from backend
-// Route::middleware('auth:api')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'show']);
-//     Route::post('/profile', [ProfileController::class, 'storeOrUpdate']);
-// });
 
-// //settings
-// Route::middleware('auth:api')->group(function () {
-//     Route::get('/settings', [SettingController::class, 'show']);
-//     Route::post('/settings', [SettingController::class, 'storeOrUpdate']);
-// });
 
-// //seo
+
+// //package info bronze(backend) which is namely packages
 // Route::middleware('auth:api')->group(function () {
     
-//     Route::post('/seo', [SeoController::class, 'storeOrUpdate']);
+//     Route::post('/packageinfo/bronze', [PackageController::class, 'storeOrUpdateBronze']);
 // });
 
-// Route::get('/seo/{slug}', [SeoController::class, 'show']);
 
+// Route::get('/packageinfo/bronze', [PackageController::class, 'BronzeShow']);
 
-//package info bronze(backend) which is namely packages
-Route::middleware('auth:api')->group(function () {
+// //package info silver(backend) which is namely packages
+// Route::middleware('auth:api')->group(function () {
     
-    Route::post('/packageinfo/bronze', [PackageController::class, 'storeOrUpdateBronze']);
-});
+//     Route::post('/packageinfo/silver', [PackageController::class, 'storeOrUpdateSilver']);
+// });
 
+// Route::get('/packageinfo/silver', [PackageController::class, 'SilverShow']);
 
-Route::get('/packageinfo/bronze', [PackageController::class, 'BronzeShow']);
-
-//package info silver(backend) which is namely packages
-Route::middleware('auth:api')->group(function () {
+// //package info gold(backend) which is namely packages
+// Route::middleware('auth:api')->group(function () {
     
-    Route::post('/packageinfo/silver', [PackageController::class, 'storeOrUpdateSilver']);
-});
+//     Route::post('/packageinfo/gold', [PackageController::class, 'storeOrUpdateGold']);
+// });
 
-Route::get('/packageinfo/silver', [PackageController::class, 'SilverShow']);
-
-//package info gold(backend) which is namely packages
-Route::middleware('auth:api')->group(function () {
-    
-    Route::post('/packageinfo/gold', [PackageController::class, 'storeOrUpdateGold']);
-});
-
-Route::get('/packageinfo/gold', [PackageController::class, 'goldShow']);
+// Route::get('/packageinfo/gold', [PackageController::class, 'goldShow']);
 
 
-//package order inserted from frontend which is namely pricing plan
-Route::post('/package-order/{slug}', [PackageOrderController::class, 'store']);
+// //package order inserted from frontend which is namely pricing plan
+// Route::post('/package-order/{slug}', [PackageOrderController::class, 'store']);
 
-//notification get from submitted from package orders which is namely notification in backend
-Route::get('/notification', [PackageOrderController::class, 'index'])->middleware('auth:api');
-
-
-//contact message get from frontend
-Route::post('/contactMessage', [ContactMessageController::class, 'store']);
+// //notification get from submitted from package orders which is namely notification in backend
+// Route::get('/notification', [PackageOrderController::class, 'index'])->middleware('auth:api');
 
 
-//packages(backend) which is namely Booking
-Route::middleware('auth:api')->group(function () {
-    Route::get('/package-order-shows', [PackageOrderController::class, 'allShow']);
-});
+// //contact message get from frontend
+// Route::post('/contactMessage', [ContactMessageController::class, 'store']);
+
+
+// //packages(backend) which is namely Booking
+// Route::middleware('auth:api')->group(function () {
+//     Route::get('/package-order-shows', [PackageOrderController::class, 'allShow']);
+// });
 
 
 
-//settings(backend) which is namely settings
-Route::middleware('auth:api')->group(function () {
-    Route::post('newSettings/email', [SettingController::class, 'updateEmail']);
-    Route::post('newSettings/password', [SettingController::class, 'updatePassword']);
-});
+// //settings(backend) which is namely settings
+// Route::middleware('auth:api')->group(function () {
+//     Route::post('newSettings/email', [SettingController::class, 'updateEmail']);
+//     Route::post('newSettings/password', [SettingController::class, 'updatePassword']);
+// });
 
-//blogs (backend) which is namely blogs
-Route::middleware('auth:api')->group(function () {
-    Route::apiResource('blogs', BlogController::class);
-});
-Route::get('/blog-data-front', [BlogController::class, 'getBlogData']);
+// //blogs (backend) which is namely blogs
+// Route::middleware('auth:api')->group(function () {
+//     Route::apiResource('blogs', BlogController::class);
+// });
+// Route::get('/blog-data-front', [BlogController::class, 'getBlogData']);
 
-Route::middleware('auth:api')->group(function () {
-    Route::put('/blogsupdate/{id}', [BlogController::class, 'updates']);
-});
+// Route::middleware('auth:api')->group(function () {
+//     Route::put('/blogsupdate/{id}', [BlogController::class, 'updates']);
+// });
 
 
 
-Route::get('/google-reviews', [GoogleReviewController::class, 'getGoogleReviews']);
+// Route::get('/google-reviews', [GoogleReviewController::class, 'getGoogleReviews']);
+
+
 
 
 
