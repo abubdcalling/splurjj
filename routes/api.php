@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PackageOrderController;
@@ -12,6 +13,9 @@ use App\Http\Controllers\SettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleReviewController;
+use App\Http\Controllers\RideController;
+use App\Http\Controllers\SubCategoryController;
+use App\Http\Controllers\VideoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +54,7 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 
 // //package info bronze(backend) which is namely packages
 // Route::middleware('auth:api')->group(function () {
-    
+
 //     Route::post('/packageinfo/bronze', [PackageController::class, 'storeOrUpdateBronze']);
 // });
 
@@ -59,7 +63,7 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 
 // //package info silver(backend) which is namely packages
 // Route::middleware('auth:api')->group(function () {
-    
+
 //     Route::post('/packageinfo/silver', [PackageController::class, 'storeOrUpdateSilver']);
 // });
 
@@ -67,7 +71,7 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 
 // //package info gold(backend) which is namely packages
 // Route::middleware('auth:api')->group(function () {
-    
+
 //     Route::post('/packageinfo/gold', [PackageController::class, 'storeOrUpdateGold']);
 // });
 
@@ -95,7 +99,8 @@ Route::post('/contactMessage', [ContactMessageController::class, 'store']);
 // //settings(backend) which is namely settings
 Route::middleware('auth:api')->group(function () {
     Route::post('settings/email', [SettingController::class, 'updateEmail']);
-    Route::post('settings/password', [SettingController::class, 'updatePassword']);
+    Route::put('settings/password', [SettingController::class, 'updatePassword']);
+    Route::post('settings/info', [SettingController::class, 'storeOrUpdate']);
     Route::post('settings/logo', [SettingController::class, 'updateLogo']);
     Route::post('settings/profile-pic', [SettingController::class, 'updateProfilePic']);
 });
@@ -107,13 +112,71 @@ Route::middleware('auth:api')->group(function () {
 // Route::get('/blog-data-front', [BlogController::class, 'getBlogData']);
 
 // Route::middleware('auth:api')->group(function () {
-//     Route::put('/blogsupdate/{id}', [BlogController::class, 'updates']);
+//     Route::post('category/create', [CategoryController::class, 'store']);
 // });
+// Route::get('category', [CategoryController::class, 'index']);
+
+// //category (backend) which is namely category
+// Route::middleware('auth:api')->group(function () {
+//     /* Videos Category(start) */
+//     Route::get('videos/subcategory', [SubCategoryController::class, 'showSubCatVideos']);
+//     Route::post('videos', [SubCategoryController::class, 'createSubCatVideos']);
+
+//     /*Videos Category(end) */
+
+//     // Route::post('ride/create', [CategoryController::class, 'store']);
+//     // Route::post('gear/create', [CategoryController::class, 'store']);
+//     // Route::post('art-and-culture/create', [CategoryController::class, 'store']);
+//     // Route::post('quiet-calm/create', [CategoryController::class, 'store']);
+//     // Route::post('latest/create', [CategoryController::class, 'store']);
+//     // Route::post('music/create', [CategoryController::class, 'store']);
+// });
+
+// Route::get('videos/shows', [CategoryController::class, 'index']);
+// Route::post('ride/shows', [CategoryController::class, 'index']);
+// Route::post('gear/shows', [CategoryController::class, 'index']);
+// Route::post('art-and-culture/shows', [CategoryController::class, 'index']);
+// Route::post('quiet-calm/shows', [CategoryController::class, 'index']);
+// Route::post('latest/shows', [CategoryController::class, 'index']);
+// Route::post('music/shows', [CategoryController::class, 'index']);
 
 
 
 // Route::get('/google-reviews', [GoogleReviewController::class, 'getGoogleReviews']);
 
+
+// Route::middleware('auth:api')->group(function () {
+//     Route::put('settings/password', [AuthController::class, 'updatePassword']);
+//     Route::post('settings/info', [AuthController::class, 'updateInformation']);
+// });
+
+Route::middleware('auth:api')->group(function () {
+    
+    // Videos API resource
+
+    /*shows all data as subcategory */
+    Route::get('videos/{id}', [VideoController::class, 'ShowVideosBySubCategory']);
+    Route::apiResource('videos', VideoController::class);
+
+
+    Route::apiResource('rides', RideController::class);
+    Route::apiResource('gears', VideoController::class);
+    Route::apiResource('art-and-culture', VideoController::class);
+    Route::apiResource('quiet-calim', VideoController::class);
+    Route::apiResource('latest', VideoController::class);
+    Route::apiResource('music', VideoController::class);
+
+    // Categories API resource
+    Route::apiResource('categories', CategoryController::class);
+
+    // Subcategories API resource
+    Route::apiResource('subcategories', SubCategoryController::class);
+});
+
+// Go to Frontend and Backend API routes
+Route::get('videos', [VideoController::class, 'index']);
+Route::get('categories', [CategoryController::class, 'index']);
+Route::get('subcategories', [SubCategoryController::class, 'index']);
 
 
 

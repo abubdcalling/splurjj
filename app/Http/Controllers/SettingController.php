@@ -15,63 +15,7 @@ class SettingController extends Controller
 {
 
 
-    public function storeOrUpdate(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'icon'          => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:10240',
-                'system_name'   => 'nullable|string|max:255',
-                'system_title'  => 'nullable|string',
-                'system_address' => 'nullable|string',
-                'email'         => 'nullable|email|max:255',
-                'phone'         => 'nullable|string|max:20',
-                'opening_hour'  => 'nullable|string|max:100',
-                'description'   => 'nullable|string',
-            ]);
 
-            $setting = Setting::first();
-            $icon = $setting->icon ?? null;
-
-            if ($request->hasFile('icon')) {
-                $file = $request->file('icon');
-                $icon = time() . '_setting_icon.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads/Settings'), $icon);
-            }
-
-            $data = [
-                'system_name'   => $validated['system_name'] ?? null,
-                'system_title'  => $validated['system_title'] ?? null,
-                'system_address' => $validated['system_address'] ?? null,
-                'email'         => $validated['email'] ?? null,
-                'phone'         => $validated['phone'] ?? null,
-                'opening_hour'  => $validated['opening_hour'] ?? null,
-                'description'   => $validated['description'] ?? null,
-                'icon'          => $icon,
-            ];
-
-            if ($setting) {
-                $setting->update($data);
-            } else {
-                $setting = Setting::create($data);
-            }
-
-            $setting->icon = $setting->icon ? url('uploads/Settings/' . $setting->icon) : null;
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Settings saved successfully.',
-                'data'    => $setting
-            ]);
-        } catch (Exception $e) {
-            Log::error('Error saving settings: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to save settings.',
-                'error'   => $e->getMessage()
-            ], 500);
-        }
-    }
 
 
 
@@ -123,12 +67,15 @@ class SettingController extends Controller
 
 
 
+
+
     public function updatePassword(Request $request)
     {
-        // return 'ok'
+        // return dd($request->all());
         try {
             $validator = Validator::make($request->all(), [
-                'password' => 'required|string|min:6',
+                'password' => 'required|string',
+                'new_password' => 'required|string|min:6|confirmed', // uses new_password_confirmation
             ]);
 
             if ($validator->fails()) {
@@ -141,6 +88,15 @@ class SettingController extends Controller
 
             $user = Auth::user();
 
+            // Check current password
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The current password is incorrect.',
+                ], 403);
+            }
+
+            // Update to new password
             $user->password = Hash::make($request->password);
             $user->save();
 
@@ -148,7 +104,7 @@ class SettingController extends Controller
                 'success' => true,
                 'message' => 'Password updated successfully.',
             ], 200);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('Error updating password: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
@@ -156,6 +112,153 @@ class SettingController extends Controller
             ], 500);
         }
     }
+
+
+
+    // public function storeOrUpdate(Request $request)
+    // {
+    //     if (!Auth::check()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Please login first.'
+    //         ], 401);
+    //     }
+
+    //     try {
+    //         $validated = $request->validate([
+    //             // User fields only
+    //             'first_name'   => 'nullable|string|max:255',
+    //             'last_name'    => 'nullable|string|max:255',
+    //             'phone'        => 'nullable|string|max:255',
+    //             'email' => 'nullable|email|max:255|unique:users,email,' . Auth::id(),
+    //             'country'      => 'nullable|string|max:255',
+    //             'city'         => 'nullable|string|max:255',
+    //             'profile_pic'  => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:10240',
+    //         ]);
+
+    //         // Update user profile
+    //         $user = Auth::user();
+    //         $user->first_name = $validated['first_name'] ?? $user->first_name;
+    //         $user->last_name  = $validated['last_name'] ?? $user->last_name;
+    //         $user->phone      = $validated['phone'] ?? $user->phone;
+    //         $user->email      = $validated['email'] ?? $user->email;
+    //         $user->country    = $validated['country'] ?? $user->country;
+    //         $user->city       = $validated['city'] ?? $user->city;
+
+    //         // Handle profile picture
+    //         if ($request->hasFile('profile_pic')) {
+    //             $profilePic = $request->file('profile_pic');
+    //             $profilePicName = time() . '_profile.' . $profilePic->getClientOriginalExtension();
+    //             $profilePic->move(public_path('uploads/ProfilePics'), $profilePicName);
+    //             $user->profile_pic = $profilePicName;
+    //         }
+
+    //         $user->save();
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Profile updated successfully.',
+    //             'data'    => [
+    //                 'first_name'  => $user->first_name,
+    //                 'last_name'   => $user->last_name,
+    //                 'phone'       => $user->phone,
+    //                 'email'       => $user->email,
+    //                 'country'     => $user->country,
+    //                 'city'        => $user->city,
+    //                 'profile_pic' => $user->profile_pic ? url('uploads/ProfilePics/' . $user->profile_pic) : null,
+    //             ]
+    //         ]);
+    //     } catch (Exception $e) {
+    //         Log::error('Error updating user profile: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to update profile.',
+    //             'error'   => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+
+
+    public function storeOrUpdate(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please login first.'
+            ], 401);
+        }
+
+        try {
+            $validated = $request->validate([
+                'first_name'   => 'nullable|string|max:255',
+                'last_name'    => 'nullable|string|max:255',
+                'phone'        => 'nullable|string|max:255',
+                'email'        => 'nullable|email|max:255|unique:users,email,' . Auth::id(),
+                'country'      => 'nullable|string|max:255',
+                'city'         => 'nullable|string|max:255',
+                'profile_pic'  => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:10240', // 10MB
+            ]);
+
+            $user = Auth::user();
+
+            // Update fields
+            $user->first_name = $validated['first_name'] ?? $user->first_name;
+            $user->last_name  = $validated['last_name'] ?? $user->last_name;
+            $user->phone      = $validated['phone'] ?? $user->phone;
+            $user->email      = $validated['email'] ?? $user->email;
+            $user->country    = $validated['country'] ?? $user->country;
+            $user->city       = $validated['city'] ?? $user->city;
+
+            // Handle profile picture upload
+            if ($request->hasFile('profile_pic')) {
+                // Delete old profile picture if exists
+                if ($user->profile_pic && file_exists(public_path('uploads/ProfilePics/' . $user->profile_pic))) {
+                    unlink(public_path('uploads/ProfilePics/' . $user->profile_pic));
+                }
+
+                $profilePic = $request->file('profile_pic');
+                $profilePicName = time() . '_profile.' . $profilePic->getClientOriginalExtension();
+                $profilePic->move(public_path('uploads/ProfilePics'), $profilePicName);
+                $user->profile_pic = $profilePicName;
+
+                // Alternative using Storage (future-proof):
+                // $profilePicName = $profilePic->storeAs('profile_pics', $profilePicName, 'public');
+                // $user->profile_pic = basename($profilePicName);
+            }
+
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile updated successfully.',
+                'data'    => [
+                    'first_name'  => $user->first_name,
+                    'last_name'   => $user->last_name,
+                    'phone'       => $user->phone,
+                    'email'       => $user->email,
+                    'country'     => $user->country,
+                    'city'        => $user->city,
+                    'profile_pic' => $user->profile_pic
+                        ? url('uploads/ProfilePics/' . $user->profile_pic)
+                        : null,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating user profile: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update profile.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+
 
 
 
@@ -168,10 +271,20 @@ class SettingController extends Controller
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
             $imageName = time() . '_logo.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads/logos'), $imageName);
+            $destinationPath = public_path('uploads/logos');
 
-            $setting = Setting::first(); // Adjust if using user/company-specific settings
+            // Get existing settings record or create new one
+            $setting = Setting::first();
 
+            // Delete old logo file if it exists
+            if ($setting && $setting->logo && file_exists(public_path($setting->logo))) {
+                unlink(public_path($setting->logo));
+            }
+
+            // Move the new file
+            $file->move($destinationPath, $imageName);
+
+            // Save to database
             if (!$setting) {
                 $setting = Setting::create(['logo' => 'uploads/logos/' . $imageName]);
             } else {
@@ -182,5 +295,40 @@ class SettingController extends Controller
         }
 
         return back()->with('error', 'No logo file uploaded.');
+    }
+
+    public function updateProfilePic(Request $request)
+    {
+        $request->validate([
+            'profile_pic' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10248',
+        ]);
+
+        if ($request->hasFile('profile_pic')) {
+            $file = $request->file('profile_pic');
+            $imageName = time() . '_profile.' . $file->getClientOriginalExtension();
+            $destinationPath = public_path('uploads/profiles');
+
+            // Get or create settings record
+            $setting = Setting::first();
+
+            // Delete old profile picture if it exists
+            if ($setting && $setting->profile_pic && file_exists(public_path($setting->profile_pic))) {
+                unlink(public_path($setting->profile_pic));
+            }
+
+            // Move the new profile picture
+            $file->move($destinationPath, $imageName);
+
+            // Save to database
+            if (!$setting) {
+                $setting = Setting::create(['profile_pic' => 'uploads/profiles/' . $imageName]);
+            } else {
+                $setting->update(['profile_pic' => 'uploads/profiles/' . $imageName]);
+            }
+
+            return back()->with('success', 'Profile picture updated successfully.');
+        }
+
+        return back()->with('error', 'No profile picture file uploaded.');
     }
 }

@@ -145,5 +145,28 @@ class AuthController extends Controller
      }
 
 
+     public function updatePassword(Request $request)
+{
+    $request->validate([
+        'current_password' => ['required'],
+        'new_password' => ['required', 'string', 'min:8', 'confirmed'], // Laravel expects a `new_password_confirmation` field for confirmation
+    ]);
+
+    $user = Auth::user();
+
+    if (!Hash::check($request->current_password, $user->password)) {
+        throw ValidationException::withMessages([
+            'current_password' => ['The current password is incorrect.'],
+        ]);
+    }
+
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    return response()->json([
+        'message' => 'Password updated successfully.',
+    ]);
+}
+
 
 }
