@@ -62,11 +62,8 @@ Route::post('/contactMessage', [ContactMessageController::class, 'store']);
 
 // //settings(backend) which is namely settings
 Route::middleware('auth:api')->group(function () {
-    // Route::post('settings/email', [SettingController::class, 'updateEmail']);
     Route::put('settings/password', [SettingController::class, 'storeOrUpdatePassword']);
     Route::post('settings/info', [SettingController::class, 'storeOrUpdate']);
-    // Route::post('settings/logo', [SettingController::class, 'updateLogo']);
-    // Route::post('settings/profile-pic', [SettingController::class, 'updateProfilePic']);
 });
 
 

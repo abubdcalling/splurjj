@@ -56,6 +56,28 @@ class ContentController extends Controller
         }
     }
 
+    public function indexForSubCategory($cat_id, $sub_id)
+    {
+        try {
+            $contents = Content::where('category_id', $cat_id)
+                ->where('subcategory_id', $sub_id)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10); // paginate with 10 per page
+
+            return response()->json([
+                'success' => true,
+                'data' => $contents
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while retrieving contents for the subcategory.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
 
 
 

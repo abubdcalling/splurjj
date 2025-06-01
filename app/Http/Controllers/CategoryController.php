@@ -12,7 +12,7 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         try {
-            $categories = Category::select('category_name')
+            $categories = Category::select('category_name','id')
                 ->when($request->search, function ($query, $search) {
                     return $query->where('category_name', 'like', "%{$search}%");
                 })
