@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('videos', function (Blueprint $table) {
+        Schema::create('contents', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('subcategory_id')->constrained()->onDelete('cascade');
             $table->longText('heading')->nullable();
             $table->longText('credits')->nullable();
             $table->date('date')->nullable(); // Added date column
@@ -20,9 +22,8 @@ return new class extends Migration
             $table->longText('body')->nullable();
             $table->string('image_1')->nullable();
             $table->string('advertising')->nullable();
-            $table->longText('tags')->nullable();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subcategory_id')->constrained()->onDelete('cascade');
+            $table->json('tags')->nullable();
+
             $table->timestamps();
         });
     }
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('videos');
+        Schema::dropIfExists('contents');
     }
 };

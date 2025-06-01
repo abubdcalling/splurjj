@@ -12,13 +12,20 @@ class SubCategoryController extends Controller
      */
     public function index()
     {
-        $groupedSubcategories = SubCategory::all()->groupBy('category_id');
+        $subcategories = SubCategory::select('category_id', 'name')->get();
+
+        $grouped = $subcategories->groupBy('category_id')->map(function ($items) {
+            return $items->map(function ($item) {
+                return ['name' => $item->name];
+            });
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $groupedSubcategories
+            'data' => $grouped
         ]);
     }
+
 
 
     /**

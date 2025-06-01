@@ -12,9 +12,10 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         try {
-            $categories = Category::when($request->search, function ($query, $search) {
-                return $query->where('category_name', 'like', "%{$search}%");
-            })
+            $categories = Category::select('category_name')
+                ->when($request->search, function ($query, $search) {
+                    return $query->where('category_name', 'like', "%{$search}%");
+                })
                 ->latest()
                 ->paginate(10);
 
@@ -30,6 +31,7 @@ class CategoryController extends Controller
             ], 500);
         }
     }
+
 
     // GET /api/categories/{id}
     public function show($id)
