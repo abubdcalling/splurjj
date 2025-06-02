@@ -141,4 +141,34 @@ class ContentController extends Controller
             ], 500);
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            $content = Content::findOrFail($id);
+
+            // Optional: delete images from storage
+            if ($content->image1) {
+                \Storage::disk('public')->delete($content->image1);
+            }
+            if ($content->advertising_image) {
+                \Storage::disk('public')->delete($content->advertising_image);
+            }
+
+            $content->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Content deleted successfully.',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Content deletion failed: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to delete content.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
