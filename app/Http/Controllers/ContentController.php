@@ -15,13 +15,13 @@ class ContentController extends Controller
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'required|exists:sub_categories,id',
-            'heading' => 'required|string',
-            'author' => 'required|string',
-            'date' => 'required|date',
+            'heading' => 'nullable|string',
+            'author' => 'nullable|string',
+            'date' => 'naullable|date',
             'sub_heading' => 'nullable|string',
-            'body1' => 'required|string',
-            'image1' => 'required|string',
-            'advertising_image' => 'required|string',
+            'body1' => 'nullable|string',
+            'image1' => 'nullable|string',
+            'advertising_image' => 'nullable|string',
             'tags' => 'nullable|array',
         ]);
 
