@@ -13,15 +13,48 @@ use Illuminate\Support\Facades\File; // Add this at the top of your controller
 class ContentController extends Controller
 {
 
+    // public function indexFrontend($cat_id)
+    // {
+    //     try {
+    //         // Get all contents where category_id matches
+    //         $contents = Content::with(['category', 'subcategory'])
+    //             ->where('category_id', $cat_id)
+    //             ->latest()
+    //             ->take(4)
+    //             ->get();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Contents fetched successfully.',
+    //             'data' => $contents,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Fetching contents failed: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Failed to fetch contents.',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function indexFrontend($cat_id)
     {
         try {
-            // Get all contents where category_id matches
+            // Get latest 4 contents for the given category
             $contents = Content::with(['category', 'subcategory'])
                 ->where('category_id', $cat_id)
                 ->latest()
                 ->take(4)
                 ->get();
+
+            // Add full image URLs to each content
+            $contents->transform(function ($content) {
+                $content->image1_url = $content->image1 ? url($content->image1) : null;
+                $content->advertising_image_url = $content->advertising_image ? url($content->advertising_image) : null;
+                return $content;
+            });
 
             return response()->json([
                 'status' => true,
@@ -38,6 +71,7 @@ class ContentController extends Controller
             ], 500);
         }
     }
+
 
 
 
