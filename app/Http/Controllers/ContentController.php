@@ -67,21 +67,26 @@ class ContentController extends Controller
 
 
 
+    
+
     // public function indexForSubCategory($cat_id, $sub_id)
     // {
     //     try {
-    //         // Optionally, verify category and subcategory exist (you can skip if already validated by route)
-    //         // Category::findOrFail($cat_id);
-    //         // SubCategory::where('category_id', $cat_id)->findOrFail($sub_id);
-
+    //         // Fetch paginated content
     //         $contents = Content::where('category_id', $cat_id)
     //             ->where('subcategory_id', $sub_id)
-    //             ->orderBy('date', 'desc')  // example ordering by date desc
-    //             ->get();
+    //             ->orderBy('date', 'desc')
+    //             ->paginate(10); // paginate with 10 items per page
 
     //         return response()->json([
     //             'status' => true,
-    //             'data' => $contents,
+    //             'data' => $contents->items(),
+    //             'meta' => [
+    //                 'current_page' => $contents->currentPage(),
+    //                 'per_page' => $contents->perPage(),
+    //                 'total_items' => $contents->total(),
+    //                 'total_pages' => $contents->lastPage(),
+    //             ]
     //         ]);
     //     } catch (\Exception $e) {
     //         Log::error('Fetching contents by category and subcategory failed: ' . $e->getMessage());
@@ -97,15 +102,21 @@ class ContentController extends Controller
     public function indexForSubCategory($cat_id, $sub_id)
     {
         try {
-            // Fetch paginated content
             $contents = Content::where('category_id', $cat_id)
                 ->where('subcategory_id', $sub_id)
                 ->orderBy('date', 'desc')
-                ->paginate(10); // paginate with 10 items per page
+                ->paginate(10);
+
+            // Map over items to add full URLs to image fields
+            $data = $contents->getCollection()->transform(function ($item) {
+                $item->image1_url = $item->image1 ? url($item->image1) : null;
+                $item->advertising_image_url = $item->advertising_image ? url($item->advertising_image) : null;
+                return $item;
+            });
 
             return response()->json([
                 'status' => true,
-                'data' => $contents->items(),
+                'data' => $data,
                 'meta' => [
                     'current_page' => $contents->currentPage(),
                     'per_page' => $contents->perPage(),
@@ -123,6 +134,7 @@ class ContentController extends Controller
             ], 500);
         }
     }
+
 
 
 
@@ -266,35 +278,7 @@ class ContentController extends Controller
         }
     }
 
-    // public function destroy($id)
-    // {
-    //     try {
-    //         $content = Content::findOrFail($id);
 
-    //         // Optional: delete images from storage
-    //         if ($content->image1) {
-    //             Storage::disk('public')->delete($content->image1);
-    //         }
-    //         if ($content->advertising_image) {
-    //             Storage::disk('public')->delete($content->advertising_image);
-    //         }
-
-    //         $content->delete();
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'Content deleted successfully.',
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Content deletion failed: ' . $e->getMessage());
-
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Failed to delete content.',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
 
 
     public function destroy($id)
