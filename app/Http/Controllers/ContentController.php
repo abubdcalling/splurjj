@@ -107,7 +107,7 @@ class ContentController extends Controller
             ]);
 
             // Ensure subcategory belongs to selected category
-            $subcategory = \App\Models\SubCategory::where('id', $validated['subcategory_id'])
+            $subcategory = \App\Models\SubCategory::where('id', $validated['sub_id'])
                 ->where('category_id', $validated['category_id'])
                 ->first();
 
