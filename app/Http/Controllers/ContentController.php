@@ -15,7 +15,7 @@ class ContentController extends Controller
     {
         try {
             $contents = Content::where('category_id', $cat_id)
-                ->with('subcategory') // Optional: eager-load subcategory relationship
+                ->with('subcategories') // Optional: eager-load subcategory relationship
                 ->latest()
                 ->get();
 
