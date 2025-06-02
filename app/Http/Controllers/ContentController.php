@@ -22,7 +22,7 @@ class ContentController extends Controller
             'body1' => 'nullable|string',
             'image1' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10248',
             'advertising_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10248',
-            'tags' => 'nullable|array|string',
+            'tags' => 'nullable|array',
         ]);
 
         try {
