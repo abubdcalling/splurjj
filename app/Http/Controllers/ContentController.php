@@ -175,7 +175,7 @@ class ContentController extends Controller
                 'data' => $content,
             ], 201);
         } catch (\Exception $e) {
-            \Log::error('Content creation failed: ' . $e->getMessage());
+            Log::error('Content creation failed: ' . $e->getMessage());
 
             return response()->json([
                 'status' => false,
