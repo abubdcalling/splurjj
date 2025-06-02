@@ -14,8 +14,9 @@ class ContentController extends Controller
     public function indexFrontend($cat_id)
     {
         try {
-            $contents = Content::where('category_id', $cat_id)
-                ->with('subcategories') // Optional: eager-load subcategory relationship
+            // Get all contents where category_id matches
+            $contents = Content::with(['category', 'subcategory'])
+                ->where('category_id', $cat_id)
                 ->latest()
                 ->get();
 
@@ -25,7 +26,7 @@ class ContentController extends Controller
                 'data' => $contents,
             ]);
         } catch (\Exception $e) {
-            Log::error('Fetching contents for category failed: ' . $e->getMessage());
+            Log::error('Fetching contents failed: ' . $e->getMessage());
 
             return response()->json([
                 'status' => false,
@@ -34,6 +35,7 @@ class ContentController extends Controller
             ], 500);
         }
     }
+
 
 
     public function index($cat_id, $sub_id, $id)
