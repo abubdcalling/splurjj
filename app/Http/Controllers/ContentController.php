@@ -142,15 +142,20 @@ class ContentController extends Controller
         ]);
 
         try {
-            // Handle image uploads
+            // Handle image1 upload
             if ($request->hasFile('image1')) {
-                $image1Path = $request->file('image1')->store('images', 'public');
-                $validated['image1'] = $image1Path;
+                $file = $request->file('image1');
+                $image1Name = time() . '_image1.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/Blogs'), $image1Name);
+                $validated['image1'] = 'uploads/Blogs/' . $image1Name;
             }
 
+            // Handle advertising_image upload
             if ($request->hasFile('advertising_image')) {
-                $advertisingImagePath = $request->file('advertising_image')->store('images', 'public');
-                $validated['advertising_image'] = $advertisingImagePath;
+                $file = $request->file('advertising_image');
+                $advertisingImageName = time() . '_advertising.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/Blogs'), $advertisingImageName);
+                $validated['advertising_image'] = 'uploads/Blogs/' . $advertisingImageName;
             }
 
             // Handle tags separately outside validation
