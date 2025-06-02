@@ -6,6 +6,8 @@ use App\Models\Content;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File; // Add this at the top of your controller
+
 
 
 class ContentController extends Controller
@@ -264,19 +266,53 @@ class ContentController extends Controller
         }
     }
 
+    // public function destroy($id)
+    // {
+    //     try {
+    //         $content = Content::findOrFail($id);
+
+    //         // Optional: delete images from storage
+    //         if ($content->image1) {
+    //             Storage::disk('public')->delete($content->image1);
+    //         }
+    //         if ($content->advertising_image) {
+    //             Storage::disk('public')->delete($content->advertising_image);
+    //         }
+
+    //         $content->delete();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Content deleted successfully.',
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Content deletion failed: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Failed to delete content.',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
+
     public function destroy($id)
     {
         try {
             $content = Content::findOrFail($id);
 
-            // Optional: delete images from storage
-            if ($content->image1) {
-                Storage::disk('public')->delete($content->image1);
-            }
-            if ($content->advertising_image) {
-                Storage::disk('public')->delete($content->advertising_image);
+            // Delete image1 from public path if exists
+            if ($content->image1 && File::exists(public_path($content->image1))) {
+                File::delete(public_path($content->image1));
             }
 
+            // Delete advertising_image from public path if exists
+            if ($content->advertising_image && File::exists(public_path($content->advertising_image))) {
+                File::delete(public_path($content->advertising_image));
+            }
+
+            // Delete content from DB
             $content->delete();
 
             return response()->json([
