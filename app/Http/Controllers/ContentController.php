@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class ContentController extends Controller
 {
-   
+
 
     public function store(Request $request)
     {
@@ -26,10 +26,8 @@ class ContentController extends Controller
         ]);
 
         try {
-            // Encode tags to JSON if present
-            if (isset($validated['tags']) && is_array($validated['tags'])) {
-                $validated['tags'] = json_encode($validated['tags']);
-            }
+            // Safely encode tags if provided as array
+            $validated['tags'] = isset($validated['tags']) ? json_encode($validated['tags']) : null;
 
             $content = Content::create($validated);
 
