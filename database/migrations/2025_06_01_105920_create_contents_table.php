@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('contents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subcategory_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('subcategory_id')->constrained('sub_categories')->onDelete('cascade');
             $table->longText('heading')->nullable();
             $table->longText('credits')->nullable();
             $table->date('date')->nullable(); // Added date column
