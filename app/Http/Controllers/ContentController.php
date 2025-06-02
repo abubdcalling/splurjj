@@ -11,6 +11,31 @@ use Illuminate\Support\Facades\Storage;
 class ContentController extends Controller
 {
 
+    public function index($cat_id, $sub_id, $id)
+    {
+        try {
+            $content = Content::where('category_id', $cat_id)
+                ->where('subcategory_id', $sub_id)
+                ->where('id', $id)
+                ->firstOrFail();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Content fetched successfully.',
+                'data' => $content,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Content fetch failed: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to fetch content.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
     public function indexForSubCategory($cat_id, $sub_id)
     {
