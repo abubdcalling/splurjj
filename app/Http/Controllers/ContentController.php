@@ -5,10 +5,39 @@ namespace App\Http\Controllers;
 use App\Models\Content;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
 
 class ContentController extends Controller
 {
 
+
+    public function indexForSubCategory($cat_id, $sub_id)
+    {
+        try {
+            // Optionally, verify category and subcategory exist (you can skip if already validated by route)
+            // Category::findOrFail($cat_id);
+            // SubCategory::where('category_id', $cat_id)->findOrFail($sub_id);
+
+            $contents = Content::where('category_id', $cat_id)
+                ->where('subcategory_id', $sub_id)
+                ->orderBy('date', 'desc')  // example ordering by date desc
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $contents,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Fetching contents by category and subcategory failed: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to fetch contents.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 
 
@@ -149,10 +178,10 @@ class ContentController extends Controller
 
             // Optional: delete images from storage
             if ($content->image1) {
-                \Storage::disk('public')->delete($content->image1);
+                Storage::disk('public')->delete($content->image1);
             }
             if ($content->advertising_image) {
-                \Storage::disk('public')->delete($content->advertising_image);
+                Storage::disk('public')->delete($content->advertising_image);
             }
 
             $content->delete();
@@ -162,7 +191,7 @@ class ContentController extends Controller
                 'message' => 'Content deleted successfully.',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Content deletion failed: ' . $e->getMessage());
+            Log::error('Content deletion failed: ' . $e->getMessage());
 
             return response()->json([
                 'status' => false,
