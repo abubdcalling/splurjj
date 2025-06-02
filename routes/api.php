@@ -102,7 +102,7 @@ Route::middleware('auth:api')->group(function () {
 
 
 //get latest 4 content is shown in frontend
-// Route::get('contents/{cat_id}', [ContentController::class, 'indexFrontend']);
+Route::get('contents/{cat_id}', [ContentController::class, 'indexFrontend']);
 
 
 // Go to Frontend and Backend API routes
