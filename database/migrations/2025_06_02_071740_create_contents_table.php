@@ -13,6 +13,18 @@ return new class extends Migration
     {
         Schema::create('contents', function (Blueprint $table) {
             $table->id();
+            // Foreign keys
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('subcategory_id')->constrained('sub_categories')->onDelete('cascade');
+
+            $table->longText('heading');
+            $table->longText('author');
+            $table->date('date');
+            $table->longText('sub_heading')->nullable();
+            $table->longText('body1');
+            $table->string('image1');
+            $table->string('advertising_image');
+            $table->json('tags')->nullable();
             $table->timestamps();
         });
     }
