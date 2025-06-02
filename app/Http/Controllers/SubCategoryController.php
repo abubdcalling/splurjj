@@ -10,20 +10,20 @@ class SubCategoryController extends Controller
     /**
      * Display a listing of the subcategories.
      */
-    // public function index()
-    // {
-    //     $subcategories = SubCategory::select('id', 'category_id', 'name')->paginate(10);
-    //     return response()->json($subcategories);
-    // }
-
     public function index()
     {
-        $subcategories = SubCategory::with('category:id,id,category_name') // eager load only needed fields
-            ->select('id', 'category_id', 'name')
-            ->paginate(10);
-
+        $subcategories = SubCategory::select('id', 'category_id', 'name')->paginate(10);
         return response()->json($subcategories);
     }
+
+    // public function index()
+    // {
+    //     $subcategories = SubCategory::with('category:id,id,category_name') // eager load only needed fields
+    //         ->select('id', 'category_id', 'name')
+    //         ->paginate(10);
+
+    //     return response()->json($subcategories);
+    // }
 
 
     /**
