@@ -62,6 +62,30 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'OTP sent to your email.']);
     }
 
+    // public function verifyResetOTP(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'otp' => 'required|digits:6',
+    //     ]);
+
+    //     $user = User::where('email', $request->email)
+    //         ->where('reset_otp', $request->otp)
+    //         ->first();
+
+    //     if (!$user || Carbon::now()->gt($user->otp_expires_at)) {
+    //         return response()->json(['success' => false, 'message' => 'Invalid or expired OTP.'], 400);
+    //     }
+
+    //     $user->otp_verified_at = Carbon::now();
+    //     $user->save();
+
+    //     return response()->json(['success' => true, 'message' => 'OTP verified. You may now reset your password.']);
+    // }
+
+    use Carbon\Carbon;
+    use App\Models\User;
+
     public function verifyResetOTP(Request $request)
     {
         $request->validate([
@@ -73,15 +97,32 @@ class AuthController extends Controller
             ->where('reset_otp', $request->otp)
             ->first();
 
-        if (!$user || Carbon::now()->gt($user->otp_expires_at)) {
-            return response()->json(['success' => false, 'message' => 'Invalid or expired OTP.'], 400);
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid OTP or user not found.'
+            ], 400);
         }
 
+        if (!$user->otp_expires_at || Carbon::now()->gt($user->otp_expires_at)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'OTP has expired.'
+            ], 400);
+        }
+
+        // OTP is valid
         $user->otp_verified_at = Carbon::now();
+        $user->reset_otp = null; // clear OTP
+        $user->otp_expires_at = null; // clear expiration
         $user->save();
 
-        return response()->json(['success' => true, 'message' => 'OTP verified. You may now reset your password.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP verified. You may now reset your password.'
+        ]);
     }
+
 
     public function passwordReset(Request $request)
     {
