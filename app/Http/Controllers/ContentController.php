@@ -41,6 +41,30 @@ class ContentController extends Controller
 
 
 
+    // public function index($cat_id, $sub_id, $id)
+    // {
+    //     try {
+    //         $content = Content::where('category_id', $cat_id)
+    //             ->where('subcategory_id', $sub_id)
+    //             ->where('id', $id)
+    //             ->firstOrFail();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Content fetched successfully.',
+    //             'data' => $content,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Content fetch failed: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Failed to fetch content.',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function index($cat_id, $sub_id, $id)
     {
         try {
@@ -48,6 +72,10 @@ class ContentController extends Controller
                 ->where('subcategory_id', $sub_id)
                 ->where('id', $id)
                 ->firstOrFail();
+
+            // Add full URLs for images
+            $content->image1_url = $content->image1 ? url($content->image1) : null;
+            $content->advertising_image_url = $content->advertising_image ? url($content->advertising_image) : null;
 
             return response()->json([
                 'status' => true,
@@ -67,7 +95,8 @@ class ContentController extends Controller
 
 
 
-    
+
+
 
     // public function indexForSubCategory($cat_id, $sub_id)
     // {
