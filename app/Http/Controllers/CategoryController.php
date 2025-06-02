@@ -35,7 +35,9 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         try {
-            $categories = Category::with(['subcategories:id,category_id,name']) // eager load subcategories
+            $categories = Category::with(['subcategories' => function ($query) {
+                $query->select('id', 'category_id', 'name');
+            }])
                 ->select('id', 'category_name')
                 ->when($request->search, function ($query, $search) {
                     return $query->where('category_name', 'like', "%{$search}%");
@@ -43,23 +45,22 @@ class CategoryController extends Controller
                 ->latest()
                 ->paginate(10);
 
-            // Flatten each subcategory into its own item with category info
-            $result = [];
-
-            foreach ($categories as $category) {
-                foreach ($category->subcategories as $sub) {
-                    $result[] = [
-                        'category_id'     => $category->id,
-                        'category_name'   => $category->category_name,
-                        'sub_category_id' => $sub->id,
-                        'sub_category_name' => $sub->name,
-                    ];
-                }
-            }
+            $result = $categories->map(function ($category) {
+                return [
+                    'category_id'   => $category->id,
+                    'category_name' => $category->category_name,
+                    'subcategories' => $category->subcategories->map(function ($sub) {
+                        return [
+                            'id'   => $sub->id,
+                            'name' => $sub->name,
+                        ];
+                    })->values(), // Even if empty, it will return an array
+                ];
+            });
 
             return response()->json([
-                'success' => true,
-                'data'    => $result,
+                'success'    => true,
+                'data'       => $result,
                 'pagination' => [
                     'current_page' => $categories->currentPage(),
                     'last_page'    => $categories->lastPage(),
@@ -75,6 +76,8 @@ class CategoryController extends Controller
             ], 500);
         }
     }
+
+
 
 
 
