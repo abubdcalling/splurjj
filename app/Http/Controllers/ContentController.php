@@ -18,6 +18,7 @@ class ContentController extends Controller
             $contents = Content::with(['category', 'subcategory'])
                 ->where('category_id', $cat_id)
                 ->latest()
+                ->take(4)
                 ->get();
 
             return response()->json([
