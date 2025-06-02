@@ -94,7 +94,7 @@ class ContentController extends Controller
 
             $validated = $request->validate([
                 'category_id' => 'required|exists:categories,id',
-                'subcategory_id' => 'required|exists:subcategories,id',
+                'subcategory_id' => 'required|exists:sub_categories,id',
                 'heading' => 'nullable|string',
                 'credits' => 'nullable|string',
                 'date' => 'nullable|date',
