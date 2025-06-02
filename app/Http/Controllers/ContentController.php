@@ -20,8 +20,9 @@ class ContentController extends Controller
             'date' => 'nullable|date',
             'sub_heading' => 'nullable|string',
             'body1' => 'nullable|string',
-            'image1' => 'nullable|string',
-            'advertising_image' => 'nullable|string',
+            'image1' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'advertising_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+
             'tags' => 'nullable|array',
         ]);
 
