@@ -85,47 +85,62 @@ class ContentController extends Controller
     public function store(Request $request)
     {
         try {
-            // Optional: decode tags if sent as a JSON string
+            // Decode JSON string if tags are passed as a string
             if (is_string($request->tags)) {
                 $request->merge([
                     'tags' => json_decode($request->tags, true)
                 ]);
             }
 
+            // Validate input
             $validated = $request->validate([
-                'category_id' => 'required|exists:categories,id',
-                'subcategory_id' => 'required|exists:sub_categories,id',
-                'heading' => 'nullable|string',
-                'credits' => 'nullable|string',
-                'date' => 'nullable|date',
-                'sub_heading' => 'nullable|string',
-                'body' => 'nullable|string',
-                'image_1' => 'nullable|string', // Or file if you're uploading
-                'advertising' => 'nullable|string',
-                'tags' => 'nullable|array',
+                'category_id'     => 'required|exists:categories,id',
+                'subcategory_id'  => 'required|exists:subcategories,id', // ✅ fixed table name
+                'heading'         => 'nullable|string',
+                'credits'         => 'nullable|string',
+                'date'            => 'nullable|date',
+                'sub_heading'     => 'nullable|string',
+                'body'            => 'nullable|string',
+                'image_1'         => 'nullable|string',
+                'advertising'     => 'nullable|string',
+                'tags'            => 'nullable|array',
             ]);
 
+            // Ensure subcategory belongs to selected category
+            $subcategory = \App\Models\SubCategory::where('id', $validated['subcategory_id'])
+                ->where('category_id', $validated['category_id'])
+                ->first();
+
+            if (!$subcategory) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The selected subcategory does not belong to the selected category.'
+                ], 422);
+            }
+
+            // Create content
             $content = Content::create($validated);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Content created successfully.',
-                'data' => $content
+                'data'    => $content
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed.',
-                'errors' => $e->errors()
+                'errors'  => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while creating content.',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
+
 
 
     public function update(Request $request, $id)
