@@ -210,22 +210,26 @@ class ContentController extends Controller
         ]);
 
         try {
-            // Handle new image1 upload if provided
+            // Handle image1 upload
             if ($request->hasFile('image1')) {
-                $image1Path = $request->file('image1')->store('images', 'public');
-                $validated['image1'] = $image1Path;
+                $file = $request->file('image1');
+                $image1Name = time() . '_image1.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/Blogs'), $image1Name);
+                $validated['image1'] = 'uploads/Blogs/' . $image1Name;
 
-                // Optionally, delete old image here if needed
-                // Storage::disk('public')->delete($content->image1);
+                // Optionally delete old image
+                // if ($content->image1) File::delete(public_path($content->image1));
             }
 
-            // Handle new advertising_image upload if provided
+            // Handle advertising_image upload
             if ($request->hasFile('advertising_image')) {
-                $advertisingImagePath = $request->file('advertising_image')->store('images', 'public');
-                $validated['advertising_image'] = $advertisingImagePath;
+                $file = $request->file('advertising_image');
+                $advertisingImageName = time() . '_advertising.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/Blogs'), $advertisingImageName);
+                $validated['advertising_image'] = 'uploads/Blogs/' . $advertisingImageName;
 
-                // Optionally, delete old advertising image here if needed
-                // Storage::disk('public')->delete($content->advertising_image);
+                // Optionally delete old image
+                // if ($content->advertising_image) File::delete(public_path($content->advertising_image));
             }
 
             // Handle tags separately outside validation
