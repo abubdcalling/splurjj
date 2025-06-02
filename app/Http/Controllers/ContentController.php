@@ -17,7 +17,7 @@ class ContentController extends Controller
             'subcategory_id' => 'required|exists:sub_categories,id',
             'heading' => 'nullable|string',
             'author' => 'nullable|string',
-            'date' => 'naullable|date',
+            'date' => 'nullable|date',
             'sub_heading' => 'nullable|string',
             'body1' => 'nullable|string',
             'image1' => 'nullable|string',
