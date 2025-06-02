@@ -78,7 +78,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('contents/', [ContentController::class, 'index']);
 
     //when single content is given in dashboard
-    Route::get('contents/{cat_id}/{sub_id}/{id}', [ContentController::class, 'index']);
+    // Route::get('contents/{cat_id}/{sub_id}/{id}', [ContentController::class, 'index']);
 
 
     //when all content is shown in dashboard for every subcategory
@@ -102,7 +102,7 @@ Route::middleware('auth:api')->group(function () {
 
 
 //get latest 4 content is shown in frontend
-Route::get('contents/{cat_id}', [ContentController::class, 'indexFrontend']);
+// Route::get('contents/{cat_id}', [ContentController::class, 'indexFrontend']);
 
 
 // Go to Frontend and Backend API routes
