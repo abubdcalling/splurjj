@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers;
 
@@ -12,26 +12,9 @@ class SubCategoryController extends Controller
      */
     public function index()
     {
-        $subcategories = SubCategory::select('id', 'category_id', 'name')->get();
-
-        $grouped = $subcategories->groupBy('category_id')->map(function ($items) {
-            return $items->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'category_id' => $item->category_id,
-                ];
-            });
-        });
-
-        return response()->json([
-            'success' => true,
-            'data' => $grouped
-        ]);
+        $subcategories = SubCategory::with('category')->paginate(10);
+        return response()->json($subcategories);
     }
-
-
-
 
     /**
      * Store a newly created subcategory in storage.
@@ -39,13 +22,16 @@ class SubCategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
         ]);
 
         $subcategory = SubCategory::create($validated);
 
-        return response()->json($subcategory, 201);
+        return response()->json([
+            'message' => 'Subcategory created successfully.',
+            'data' => $subcategory,
+        ], 201);
     }
 
     /**
@@ -53,7 +39,9 @@ class SubCategoryController extends Controller
      */
     public function show(SubCategory $subcategory)
     {
-        return $subcategory;
+        $subcategory->load('category');
+
+        return response()->json($subcategory);
     }
 
     /**
@@ -62,13 +50,16 @@ class SubCategoryController extends Controller
     public function update(Request $request, SubCategory $subcategory)
     {
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'category_id' => 'sometimes|required|exists:categories,id',
+            'category_id' => 'sometimes|exists:categories,id',
+            'name' => 'sometimes|string|max:255',
         ]);
 
         $subcategory->update($validated);
 
-        return response()->json($subcategory);
+        return response()->json([
+            'message' => 'Subcategory updated successfully.',
+            'data' => $subcategory,
+        ]);
     }
 
     /**
@@ -78,6 +69,8 @@ class SubCategoryController extends Controller
     {
         $subcategory->delete();
 
-        return response()->json(['message' => 'Subcategory deleted successfully']);
+        return response()->json([
+            'message' => 'Subcategory deleted successfully.',
+        ], 204);
     }
 }
