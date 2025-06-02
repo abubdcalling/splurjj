@@ -9,19 +9,63 @@ use Illuminate\Support\Facades\Auth;
 class CategoryController extends Controller
 {
     // GET /api/categories
+    // public function index(Request $request)
+    // {
+    //     try {
+    //         $categories = Category::select('category_name','id')
+    //             ->when($request->search, function ($query, $search) {
+    //                 return $query->where('category_name', 'like', "%{$search}%");
+    //             })
+    //             ->latest()
+    //             ->paginate(10);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'data'    => $categories
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to fetch categories',
+    //             'error'   => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
     public function index(Request $request)
     {
         try {
-            $categories = Category::select('category_name','id')
+            $categories = Category::with(['subcategories:id,category_id,name']) // eager load subcategories
+                ->select('id', 'category_name')
                 ->when($request->search, function ($query, $search) {
                     return $query->where('category_name', 'like', "%{$search}%");
                 })
                 ->latest()
                 ->paginate(10);
 
+            // Flatten each subcategory into its own item with category info
+            $result = [];
+
+            foreach ($categories as $category) {
+                foreach ($category->subcategories as $sub) {
+                    $result[] = [
+                        'category_id'     => $category->id,
+                        'category_name'   => $category->category_name,
+                        'sub_category_id' => $sub->id,
+                        'sub_category_name' => $sub->name,
+                    ];
+                }
+            }
+
             return response()->json([
                 'success' => true,
-                'data'    => $categories
+                'data'    => $result,
+                'pagination' => [
+                    'current_page' => $categories->currentPage(),
+                    'last_page'    => $categories->lastPage(),
+                    'per_page'     => $categories->perPage(),
+                    'total'        => $categories->total(),
+                ]
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -31,6 +75,7 @@ class CategoryController extends Controller
             ], 500);
         }
     }
+
 
 
     // GET /api/categories/{id}
