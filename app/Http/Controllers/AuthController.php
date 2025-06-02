@@ -13,29 +13,49 @@ use Illuminate\Support\Facades\Password;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Cache;
 
 class AuthController extends Controller
 {
+
+    // public function sendResetOTP(Request $request)
+    // {
+    //     $request->validate(['email' => 'required|email']);
+
+    //     $user = User::where('email', $request->email)->first();
+
+    //     if (!$user) {
+    //         return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+    //     }
+
+    //     $otp = rand(100000, 999999);
+
+    //     $user->reset_otp = $otp;
+    //     $user->otp_expires_at = Carbon::now()->addMinutes(10);
+    //     $user->save();
+
+    //     Mail::raw("Your password reset OTP is: $otp", function ($message) use ($user) {
+    //         $message->to($user->email)
+    //             ->subject('Password Reset OTP');
+    //     });
+
+    //     return response()->json(['success' => true, 'message' => 'OTP sent to your email.']);
+    // }
 
     public function sendResetOTP(Request $request)
     {
         $request->validate(['email' => 'required|email']);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'User not found.'], 404);
-        }
-
         $otp = rand(100000, 999999);
 
-        $user->reset_otp = $otp;
-        $user->otp_expires_at = Carbon::now()->addMinutes(10);
-        $user->save();
+        // Store OTP in cache or a temp table, since there's no user to attach it to
+        Cache::put('reset_otp_' . $request->email, [
+            'otp' => $otp,
+            'expires_at' => Carbon::now()->addMinutes(10)
+        ], now()->addMinutes(10));
 
-        Mail::raw("Your password reset OTP is: $otp", function ($message) use ($user) {
-            $message->to($user->email)
+        Mail::raw("Your password reset OTP is: $otp", function ($message) use ($request) {
+            $message->to($request->email)
                 ->subject('Password Reset OTP');
         });
 
