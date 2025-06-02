@@ -65,21 +65,51 @@ class ContentController extends Controller
 
 
 
+    // public function indexForSubCategory($cat_id, $sub_id)
+    // {
+    //     try {
+    //         // Optionally, verify category and subcategory exist (you can skip if already validated by route)
+    //         // Category::findOrFail($cat_id);
+    //         // SubCategory::where('category_id', $cat_id)->findOrFail($sub_id);
+
+    //         $contents = Content::where('category_id', $cat_id)
+    //             ->where('subcategory_id', $sub_id)
+    //             ->orderBy('date', 'desc')  // example ordering by date desc
+    //             ->get();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'data' => $contents,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Fetching contents by category and subcategory failed: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Failed to fetch contents.',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function indexForSubCategory($cat_id, $sub_id)
     {
         try {
-            // Optionally, verify category and subcategory exist (you can skip if already validated by route)
-            // Category::findOrFail($cat_id);
-            // SubCategory::where('category_id', $cat_id)->findOrFail($sub_id);
-
+            // Fetch paginated content
             $contents = Content::where('category_id', $cat_id)
                 ->where('subcategory_id', $sub_id)
-                ->orderBy('date', 'desc')  // example ordering by date desc
-                ->get();
+                ->orderBy('date', 'desc')
+                ->paginate(10); // paginate with 10 items per page
 
             return response()->json([
                 'status' => true,
-                'data' => $contents,
+                'data' => $contents->items(),
+                'meta' => [
+                    'current_page' => $contents->currentPage(),
+                    'per_page' => $contents->perPage(),
+                    'total_items' => $contents->total(),
+                    'total_pages' => $contents->lastPage(),
+                ]
             ]);
         } catch (\Exception $e) {
             Log::error('Fetching contents by category and subcategory failed: ' . $e->getMessage());
@@ -91,6 +121,7 @@ class ContentController extends Controller
             ], 500);
         }
     }
+
 
 
 
