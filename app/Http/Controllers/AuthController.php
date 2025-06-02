@@ -83,8 +83,7 @@ class AuthController extends Controller
     //     return response()->json(['success' => true, 'message' => 'OTP verified. You may now reset your password.']);
     // }
 
-    use Carbon\Carbon;
-    use App\Models\User;
+
 
     public function verifyResetOTP(Request $request)
     {
