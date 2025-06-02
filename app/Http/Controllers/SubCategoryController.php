@@ -12,10 +12,7 @@ class SubCategoryController extends Controller
      */
     public function index()
     {
-        $subcategories = SubCategory::with(['category:id,name']) // only load id and name from category
-            ->select('id', 'category_id', 'name')
-            ->paginate(10);
-
+        $subcategories = SubCategory::select('id', 'category_id', 'name')->paginate(10);
         return response()->json($subcategories);
     }
 
