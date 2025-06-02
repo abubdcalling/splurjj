@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
@@ -12,9 +12,13 @@ class SubCategoryController extends Controller
      */
     public function index()
     {
-        $subcategories = SubCategory::with('category')->paginate(10);
+        $subcategories = SubCategory::with(['category:id,name']) // only load id and name from category
+            ->select('id', 'category_id', 'name')
+            ->paginate(10);
+
         return response()->json($subcategories);
     }
+
 
     /**
      * Store a newly created subcategory in storage.
