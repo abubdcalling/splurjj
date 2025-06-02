@@ -12,9 +12,23 @@ class SubCategoryController extends Controller
      */
     public function index()
     {
-        $subcategories = SubCategory::select('id', 'category_id', 'name')->paginate(10);
+        $subcategories = SubCategory::with('category:id,id,name') // only get category id & name
+            ->select('id', 'category_id', 'name')
+            ->paginate(10);
+
+        // Transform response to include category_name
+        $subcategories->getCollection()->transform(function ($item) {
+            return [
+                'id' => $item->id,
+                'category_id' => $item->category_id,
+                'name' => $item->name,
+                'category_name' => $item->category->name ?? null,
+            ];
+        });
+
         return response()->json($subcategories);
     }
+
 
 
     /**
