@@ -88,7 +88,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::post('contents/', [ContentController::class, 'store']);
-    Route::put('contents/{id}', [ContentController::class, 'update']);
+    Route::post('contents/{id}', [ContentController::class, 'update']);
     Route::delete('contents/{id}', [ContentController::class, 'destroy']);
 
 
