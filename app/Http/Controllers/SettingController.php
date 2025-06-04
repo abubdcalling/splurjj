@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 
 class SettingController extends Controller
 {
@@ -120,16 +119,16 @@ class SettingController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'current_password'      => 'required|string',
-                'new_password'          => 'required|string|min:6',
-                'confirm_new_password'  => 'required|string',
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:6',
+                'confirm_new_password' => 'required|string',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed.',
-                    'errors'  => $validator->errors(),
+                    'errors' => $validator->errors(),
                 ], 400);
             }
 
@@ -168,33 +167,33 @@ class SettingController extends Controller
 
 
 
-public function index()
-{
-    if (!Auth::check()) {
+    public function index()
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Please login first.'
+            ], 401);
+        }
+
+        $user = Auth::user();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized. Please login first.'
-        ], 401);
+            'success' => true,
+            'message' => 'User settings fetched successfully.',
+            'data' => [
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'phone' => $user->phone,
+                'email' => $user->email,
+                'country' => $user->country,
+                'city' => $user->city,
+                'profile_pic' => $user->profile_pic
+                    ? url('uploads/ProfilePics/' . $user->profile_pic)
+                    : null,
+            ]
+        ]);
     }
-
-    $user = Auth::user();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'User settings fetched successfully.',
-        'data'    => [
-            'first_name'  => $user->first_name,
-            'last_name'   => $user->last_name,
-            'phone'       => $user->phone,
-            'email'       => $user->email,
-            'country'     => $user->country,
-            'city'        => $user->city,
-            'profile_pic' => $user->profile_pic
-                ? url('uploads/ProfilePics/' . $user->profile_pic)
-                : null,
-        ]
-    ]);
-}
 
 
 
@@ -217,24 +216,24 @@ public function index()
 
         try {
             $validated = $request->validate([
-                'first_name'   => 'nullable|string|max:255',
-                'last_name'    => 'nullable|string|max:255',
-                'phone'        => 'nullable|string|max:255',
-                'email'        => 'nullable|email|max:255|unique:users,email,' . Auth::id(),
-                'country'      => 'nullable|string|max:255',
-                'city'         => 'nullable|string|max:255',
-                'profile_pic'  => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:10240', // 10MB
+                'first_name' => 'nullable|string|max:255',
+                'last_name' => 'nullable|string|max:255',
+                'phone' => 'nullable|string|max:255',
+                'email' => 'nullable|email|max:255|unique:users,email,' . Auth::id(),
+                'country' => 'nullable|string|max:255',
+                'city' => 'nullable|string|max:255',
+                'profile_pic' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:10240', // 10MB
             ]);
 
             $user = Auth::user();
 
             // Update fields
             $user->first_name = $validated['first_name'] ?? $user->first_name;
-            $user->last_name  = $validated['last_name'] ?? $user->last_name;
-            $user->phone      = $validated['phone'] ?? $user->phone;
-            $user->email      = $validated['email'] ?? $user->email;
-            $user->country    = $validated['country'] ?? $user->country;
-            $user->city       = $validated['city'] ?? $user->city;
+            $user->last_name = $validated['last_name'] ?? $user->last_name;
+            $user->phone = $validated['phone'] ?? $user->phone;
+            $user->email = $validated['email'] ?? $user->email;
+            $user->country = $validated['country'] ?? $user->country;
+            $user->city = $validated['city'] ?? $user->city;
 
             // Handle profile picture upload
             if ($request->hasFile('profile_pic')) {
@@ -258,13 +257,13 @@ public function index()
             return response()->json([
                 'success' => true,
                 'message' => 'Profile updated successfully.',
-                'data'    => [
-                    'first_name'  => $user->first_name,
-                    'last_name'   => $user->last_name,
-                    'phone'       => $user->phone,
-                    'email'       => $user->email,
-                    'country'     => $user->country,
-                    'city'        => $user->city,
+                'data' => [
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'phone' => $user->phone,
+                    'email' => $user->email,
+                    'country' => $user->country,
+                    'city' => $user->city,
                     'profile_pic' => $user->profile_pic
                         ? url('uploads/ProfilePics/' . $user->profile_pic)
                         : null,
@@ -276,7 +275,7 @@ public function index()
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update profile.',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 500);
         }
     }
