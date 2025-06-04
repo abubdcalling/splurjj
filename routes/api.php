@@ -64,6 +64,7 @@ Route::post('/contactMessage', [ContactMessageController::class, 'store']);
 Route::middleware('auth:api')->group(function () {
     Route::put('settings/password', [SettingController::class, 'storeOrUpdatePassword']);
     Route::post('settings/info', [SettingController::class, 'storeOrUpdate']);
+    Route::get('settings/info', [SettingController::class, 'index']);
 });
 
 
